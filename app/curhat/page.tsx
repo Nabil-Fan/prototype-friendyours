@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Heart, Send, Bot, User, Play, ExternalLink, Calendar, Loader2 } from "lucide-react"
+import { Heart, Send, Bot, User, Play, ExternalLink, Calendar, Loader2, Book, Settings, ArrowLeft } from "lucide-react" // Pastikan semua icon sudah diimpor
 import Link from "next/link"
 import { EmergencyModal } from "@/components/emergency-modal"
+import { useRouter } from "next/navigation"
 
 interface ChatMessage {
   id: string
@@ -57,6 +58,10 @@ export default function CurhatPage() {
     Array<{ role: "user" | "assistant"; content: string }>
   >([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // State untuk kontrol dropdown "Tanya"
+  const [isTanyaDropdownOpen, setIsTanyaDropdownOpen] = useState(false);
+
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -178,24 +183,78 @@ export default function CurhatPage() {
     }
   }
 
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      {/* Header */}
       <header className="border-b border-white/20 backdrop-blur-sm bg-white/80 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-2">
-              <Heart className="h-8 w-8 text-pink-500" />
-              <h1 className="text-2xl font-bold text-gray-800">FriendYours</h1>
-            </Link>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => router.back()}
+                className="text-gray-600 hover:text-gray-800"
+              >
+                <ArrowLeft className="h-6 w-6" />
+              </Button>
+              <Link href="/" className="flex items-center space-x-2">
+                <Heart className="h-8 w-8 text-pink-500" />
+                <h1 className="text-2xl font-bold text-gray-800">FriendYours</h1>
+              </Link>
+            </div>
+            <div className="flex items-center space-x-2 md:hidden">
               <Bot className="h-6 w-6 text-purple-600" />
               <span className="text-lg font-semibold text-gray-700">Sahabat AI</span>
+            </div>
+            <nav className="hidden md:flex space-x-6">
+              <Link href="/curhat" className="text-purple-600 font-semibold transition-colors">
+                Curhat
+              </Link>
+              <Link href="/tracking" className="text-gray-600 hover:text-gray-800 transition-colors">
+                Mood Tracking
+              </Link>
+
+              <div className="relative">
+                <button
+                  onClick={() => setIsTanyaDropdownOpen(!isTanyaDropdownOpen)}
+                  className="text-gray-600 hover:text-gray-800 transition-colors focus:outline-none flex items-center"
+                >
+                  Tanya <span className="ml-1 text-sm">&#9662;</span>
+                </button>
+
+                {isTanyaDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                    <Link href="/tanya-komunitas" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setIsTanyaDropdownOpen(false)}>
+                      Tanya Komunitas
+                    </Link>
+                    <Link href="/tanya-teman" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setIsTanyaDropdownOpen(false)}>
+                      Tanya Teman
+                    </Link>
+                    <Link href="/tanya-psikolog" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setIsTanyaDropdownOpen(false)}>
+                      Tanya Psikolog
+                    </Link>
+                  </div>
+                )}
+              </div>
+              <Link href="/Konten" className="text-gray-600 hover:text-gray-800 transition-colors">
+                Konten
+              </Link>
+
+              <Link href="/settings" className="text-gray-600 hover:text-gray-800 transition-colors flex items-center space-x-1">
+                <Settings className="h-5 w-5" />
+              </Link>
+            </nav>
+            <div className="md:hidden">
+              <Link href="/settings">
+                <Settings className="h-6 w-6 text-gray-600 hover:text-gray-800" />
+              </Link>
             </div>
           </div>
         </div>
       </header>
-
+      
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
           <CardHeader className="text-center">
@@ -247,7 +306,6 @@ export default function CurhatPage() {
                           </div>
                         )}
 
-                        {/* Voice Motivation */}
                         {msg.voiceMotivation && (
                           <div className="mt-3 p-3 bg-purple-50 rounded-lg">
                             <div className="flex items-center justify-between mb-2">
@@ -266,7 +324,6 @@ export default function CurhatPage() {
                           </div>
                         )}
 
-                        {/* External Links */}
                         {msg.externalLinks && msg.externalLinks.length > 0 && (
                           <div className="mt-3 space-y-2">
                             <p className="font-semibold text-purple-700 text-xs">Konten yang membantu:</p>
@@ -305,9 +362,7 @@ export default function CurhatPage() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Area */}
             <div className="space-y-4">
-              {/* Mood Selection for first interaction */}
               {currentState === "greeting" && (
                 <div className="space-y-4">
                   <p className="text-sm text-gray-600 font-medium">Atau pilih mood kamu:</p>
@@ -364,9 +419,9 @@ export default function CurhatPage() {
                 </div>
               </div>
 
-              {/* Quick Actions */}
+              {/* Quick Actions - "Sumber Daya" is already added here */}
               {currentState === "chatting" && (
-                <div className="grid md:grid-cols-2 gap-4 pt-4 border-t">
+                <div className="grid md:grid-cols-3 gap-4 pt-4 border-t">
                   <Link href="/tracking">
                     <Button
                       variant="outline"
@@ -387,6 +442,16 @@ export default function CurhatPage() {
                       <span className="text-xs text-gray-500">Berbagi dengan sesama</span>
                     </Button>
                   </Link>
+                  <Link href="/resources"> {/* This is the "Sumber Daya" Quick Action Button */}
+                    <Button
+                      variant="outline"
+                      className="w-full h-auto p-4 flex flex-col items-center space-y-2 bg-transparent"
+                    >
+                      <Book className="h-6 w-6 text-blue-600" />
+                      <span className="font-medium">Sumber Daya</span>
+                      <span className="text-xs text-gray-500">Baca artikel & panduan</span>
+                    </Button>
+                  </Link>
                 </div>
               )}
             </div>
@@ -394,7 +459,7 @@ export default function CurhatPage() {
         </Card>
       </div>
 
-      <EmergencyModal isOpen={showEmergencyModal} onClose={() => setShowEmergencyModal(false)} />
-    </div>
-  )
+        <EmergencyModal isOpen={showEmergencyModal} onClose={() => setShowEmergencyModal(false)} />
+      </div>
+  );
 }
