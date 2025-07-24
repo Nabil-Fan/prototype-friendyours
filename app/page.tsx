@@ -29,6 +29,12 @@ export default function HomePage() {
               <Link href="/tanya-teman" className="text-gray-600 hover:text-gray-800 transition-colors">
                 Tanya Teman
               </Link>
+              <Link href="/Psikolog" className="text-gray-600 hover:text-gray-800 transition-colors">
+                Psikolog
+              </Link>
+              <Link href="/setting" className="text-gray-600 hover:text-gray-800 transition-colors">
+                Pengaturan
+              </Link>
             </nav>
           </div>
         </div>
