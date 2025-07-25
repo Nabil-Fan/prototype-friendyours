@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Heart, Send, Bot, User, Play, ExternalLink, Calendar, Loader2 } from "lucide-react"
+import { Heart, Send, Bot, User, Play, ExternalLink, Calendar, Loader2, Sparkles } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import Link from "next/link"
 import { EmergencyModal } from "@/components/emergency-modal"
 
@@ -27,20 +28,24 @@ interface MoodOption {
   emoji: string
   label: string
   category: "positive" | "neutral" | "negative"
+  color: string
 }
 
 const moodOptions: MoodOption[] = [
-  { emoji: "😊", label: "Senang", category: "positive" },
-  { emoji: "😌", label: "Tenang", category: "neutral" },
-  { emoji: "😐", label: "Biasa aja", category: "neutral" },
-  { emoji: "😰", label: "Cemas", category: "negative" },
-  { emoji: "😢", label: "Sedih", category: "negative" },
-  { emoji: "😤", label: "Kesal", category: "negative" },
+  { emoji: "😊", label: "Senang", category: "positive", color: "from-green-400 to-emerald-500" },
+  { emoji: "😌", label: "Tenang", category: "neutral", color: "from-blue-400 to-cyan-500" },
+  { emoji: "😐", label: "Biasa aja", category: "neutral", color: "from-gray-400 to-slate-500" },
+  { emoji: "😰", label: "Cemas", category: "negative", color: "from-yellow-400 to-orange-500" },
+  { emoji: "😢", label: "Sedih", category: "negative", color: "from-blue-500 to-indigo-600" },
+  { emoji: "😤", label: "Kesal", category: "negative", color: "from-red-400 to-pink-500" },
 ]
 
 type ChatbotState = "greeting" | "chatting"
 
 export default function CurhatPage() {
+  const [isAuthOpen, setIsAuthOpen] = useState(false)
+  const [authType, setAuthType] = useState<"login"|"register">("login")
+
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "1",
@@ -148,7 +153,7 @@ export default function CurhatPage() {
       utterance.pitch = 1.0
       utterance.volume = 0.9
 
-      // Coba Indonesian voice
+      // Try to find Indonesian voice
       const voices = speechSynthesis.getVoices()
       const indonesianVoice = voices.find(
         (voice) =>
@@ -170,37 +175,112 @@ export default function CurhatPage() {
   const getEmotionColor = (category: string) => {
     switch (category) {
       case "positive":
-        return "text-green-600 bg-green-100"
+        return "text-green-700 bg-gradient-to-r from-green-100 to-emerald-100"
       case "negative":
-        return "text-red-600 bg-red-100"
+        return "text-red-700 bg-gradient-to-r from-red-100 to-pink-100"
       default:
-        return "text-blue-600 bg-blue-100"
+        return "text-blue-700 bg-gradient-to-r from-blue-100 to-cyan-100"
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Header */}
-      <header className="border-b border-white/20 backdrop-blur-sm bg-white/80 sticky top-0 z-50">
+      <header className="border-b border-white/30 backdrop-blur-sm bg-white/90 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-2">
-              <Heart className="h-8 w-8 text-pink-500" />
-              <h1 className="text-2xl font-bold text-gray-800">FriendYours</h1>
-            </Link>
             <div className="flex items-center space-x-2">
-              <Bot className="h-6 w-6 text-purple-600" />
-              <span className="text-lg font-semibold text-gray-700">Sahabat AI</span>
+              <div className="relative">
+                <Heart className="h-8 w-8 text-indigo-500" />
+                <Sparkles className="h-3 w-3 text-amber-400 absolute -top-1 -right-1" />
+              </div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                FriendYours
+              </h1>
             </div>
+            <nav className="hidden md:flex items-center space-x-4">
+              <Link href="/curhat" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">
+                Curhat
+              </Link>
+              <Link href="/jurnal-mood" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">
+                Jurnal Mood
+              </Link>
+              <Link href="/komunitas" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">
+                Komunitas
+              </Link>
+              <Link href="/tanya-psikolog" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">
+                Tanya Psikolog
+              </Link>
+              <Link href="/konten" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">
+                Konten
+              </Link>
+              <Link href="/pengaturan" className="text-gray-700 hover:text-indigo-600 transition-colors font-medium">
+                Pengaturan
+              </Link>
+              <Button 
+                variant="outline" 
+                className="border-indigo-300 text-indigo-600 hover:bg-indigo-50"
+                onClick={() => setIsAuthOpen(true)}
+              >
+                <User className="h-4 w-4 mr-1" />
+                Masuk
+              </Button>
+            </nav>
           </div>
         </div>
       </header>
 
+            {/* Auth Dialog */}
+      <Dialog open={isAuthOpen} onOpenChange={setIsAuthOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-center">
+              {authType === "login" ? "Masuk ke Akun" : "Daftar Akun Baru"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="email" className="text-right">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                className="col-span-3 border rounded-md px-3 py-2"
+                placeholder="email@contoh.com"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="password" className="text-right">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                className="col-span-3 border rounded-md px-3 py-2"
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+          <div className="flex justify-between">
+            <Button 
+              variant="ghost" 
+              onClick={() => setAuthType(authType === "login" ? "register" : "login")}
+            >
+              {authType === "login" ? "Belum punya akun? Daftar" : "Sudah punya akun? Masuk"}
+            </Button>
+            <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700">
+              {authType === "login" ? "Masuk" : "Daftar"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
-          <CardHeader className="text-center">
+        <Card className="bg-white/90 backdrop-blur-sm border-0 shadow-xl">
+          <CardHeader className="text-center bg-gradient-to-r from-indigo-50 to-purple-50 rounded-t-lg">
             <CardTitle className="text-2xl text-gray-800 flex items-center justify-center space-x-2">
-              <Bot className="h-8 w-8 text-purple-600" />
+              <Bot className="h-8 w-8 text-indigo-600" />
               <span>Chat dengan Sahabat AI</span>
             </CardTitle>
             <p className="text-gray-600">AI yang siap mendengarkan dan memahami ceritamu</p>
@@ -213,12 +293,12 @@ export default function CurhatPage() {
                   <div
                     className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
                       msg.type === "user"
-                        ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white"
-                        : "bg-white shadow-md text-gray-800"
+                        ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg"
+                        : "bg-white shadow-md text-gray-800 border border-gray-200"
                     }`}
                   >
                     <div className="flex items-start space-x-2">
-                      {msg.type === "ai" && <Bot className="h-5 w-5 text-purple-600 mt-0.5 flex-shrink-0" />}
+                      {msg.type === "ai" && <Bot className="h-5 w-5 text-indigo-600 mt-0.5 flex-shrink-0" />}
                       {msg.type === "user" && <User className="h-5 w-5 text-white mt-0.5 flex-shrink-0" />}
                       <div className="flex-1">
                         <p className="text-sm leading-relaxed">{msg.content}</p>
@@ -235,11 +315,11 @@ export default function CurhatPage() {
                         {/* Recommendations */}
                         {msg.recommendations && msg.recommendations.length > 0 && (
                           <div className="mt-3 space-y-2">
-                            <p className="font-semibold text-purple-700 text-xs">Saran praktis:</p>
+                            <p className="font-semibold text-indigo-700 text-xs">Saran praktis:</p>
                             <ul className="space-y-1 text-xs">
                               {msg.recommendations.map((rec, index) => (
                                 <li key={index} className="flex items-start space-x-2">
-                                  <span className="text-purple-500">•</span>
+                                  <span className="text-indigo-500">•</span>
                                   <span>{rec}</span>
                                 </li>
                               ))}
@@ -249,14 +329,14 @@ export default function CurhatPage() {
 
                         {/* Voice Motivation */}
                         {msg.voiceMotivation && (
-                          <div className="mt-3 p-3 bg-purple-50 rounded-lg">
+                          <div className="mt-3 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
                             <div className="flex items-center justify-between mb-2">
-                              <p className="text-xs text-purple-700 font-medium">Motivasi</p>
+                              <p className="text-xs text-indigo-700 font-medium">Motivasi</p>
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => playVoiceMotivation(msg.voiceMotivation!)}
-                                className="h-8 px-3 text-purple-600 border-purple-200 hover:bg-purple-100"
+                                className="h-8 px-3 text-indigo-600 border-indigo-200 hover:bg-indigo-100"
                               >
                                 <Play className="h-3 w-3 mr-1" />
                                 Dengar
@@ -269,7 +349,7 @@ export default function CurhatPage() {
                         {/* External Links */}
                         {msg.externalLinks && msg.externalLinks.length > 0 && (
                           <div className="mt-3 space-y-2">
-                            <p className="font-semibold text-purple-700 text-xs">Konten yang membantu:</p>
+                            <p className="font-semibold text-indigo-700 text-xs">Konten yang membantu:</p>
                             {msg.externalLinks.map((link, index) => (
                               <a
                                 key={index}
@@ -292,10 +372,10 @@ export default function CurhatPage() {
 
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-white shadow-md rounded-2xl px-4 py-3 max-w-xs">
+                  <div className="bg-white shadow-md rounded-2xl px-4 py-3 max-w-xs border border-gray-200">
                     <div className="flex items-center space-x-2">
-                      <Bot className="h-5 w-5 text-purple-600" />
-                      <Loader2 className="h-4 w-4 animate-spin text-purple-600" />
+                      <Bot className="h-5 w-5 text-indigo-600" />
+                      <Loader2 className="h-4 w-4 animate-spin text-indigo-600" />
                       <span className="text-sm text-gray-600">Sedang mengetik...</span>
                     </div>
                   </div>
@@ -310,7 +390,7 @@ export default function CurhatPage() {
               {/* Mood Selection for first interaction */}
               {currentState === "greeting" && (
                 <div className="space-y-4">
-                  <p className="text-sm text-gray-600 font-medium">Atau pilih mood kamu:</p>
+                  <p className="text-sm text-gray-700 font-medium text-center">Atau pilih mood kamu:</p>
                   <div className="grid grid-cols-3 gap-2">
                     {moodOptions.map((mood) => (
                       <Button
@@ -318,16 +398,10 @@ export default function CurhatPage() {
                         variant="outline"
                         onClick={() => handleMoodSelection(mood.label)}
                         disabled={isLoading}
-                        className={`h-auto p-3 flex flex-col items-center space-y-1 ${
-                          mood.category === "positive"
-                            ? "border-green-200 hover:bg-green-50"
-                            : mood.category === "neutral"
-                              ? "border-blue-200 hover:bg-blue-50"
-                              : "border-red-200 hover:bg-red-50"
-                        }`}
+                        className={`h-auto p-3 flex flex-col items-center space-y-1 bg-gradient-to-r ${mood.color} text-white border-0 hover:scale-105 transition-all duration-300 shadow-lg`}
                       >
                         <span className="text-2xl">{mood.emoji}</span>
-                        <span className="text-xs">{mood.label}</span>
+                        <span className="text-xs font-medium">{mood.label}</span>
                       </Button>
                     ))}
                   </div>
@@ -341,7 +415,7 @@ export default function CurhatPage() {
                   value={userInput}
                   onChange={(e) => setUserInput(e.target.value)}
                   disabled={isLoading}
-                  className="min-h-[100px] resize-none border-gray-200 focus:border-purple-400 focus:ring-purple-400"
+                  className="min-h-[100px] resize-none border-gray-200 focus:border-indigo-400 focus:ring-indigo-400"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault()
@@ -356,7 +430,7 @@ export default function CurhatPage() {
                   <Button
                     onClick={handleMessageSubmit}
                     disabled={!userInput.trim() || isLoading}
-                    className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700"
+                    className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700"
                   >
                     {isLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
                     Kirim
@@ -366,25 +440,25 @@ export default function CurhatPage() {
 
               {/* Quick Actions */}
               {currentState === "chatting" && (
-                <div className="grid md:grid-cols-2 gap-4 pt-4 border-t">
-                  <Link href="/tracking">
+                <div className="grid md:grid-cols-2 gap-4 pt-4 border-t border-gray-200">
+                  <Link href="/jurnal-mood">
                     <Button
                       variant="outline"
-                      className="w-full h-auto p-4 flex flex-col items-center space-y-2 bg-transparent"
+                      className="w-full h-auto p-4 flex flex-col items-center space-y-2 bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200 hover:from-blue-100 hover:to-cyan-100"
                     >
-                      <Calendar className="h-6 w-6 text-purple-600" />
-                      <span className="font-medium">Mood Tracking</span>
-                      <span className="text-xs text-gray-500">Pantau perkembangan mood</span>
+                      <Calendar className="h-6 w-6 text-blue-600" />
+                      <span className="font-medium text-blue-800">Mood Tracking</span>
+                      <span className="text-xs text-blue-600">Pantau perkembangan mood</span>
                     </Button>
                   </Link>
                   <Link href="/komunitas">
                     <Button
                       variant="outline"
-                      className="w-full h-auto p-4 flex flex-col items-center space-y-2 bg-transparent"
+                      className="w-full h-auto p-4 flex flex-col items-center space-y-2 bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200 hover:from-purple-100 hover:to-indigo-100"
                     >
-                      <Heart className="h-6 w-6 text-pink-600" />
-                      <span className="font-medium">Komunitas</span>
-                      <span className="text-xs text-gray-500">Berbagi dengan sesama</span>
+                      <Heart className="h-6 w-6 text-purple-600" />
+                      <span className="font-medium text-purple-800">Komunitas</span>
+                      <span className="text-xs text-purple-600">Berbagi dengan sesama</span>
                     </Button>
                   </Link>
                 </div>

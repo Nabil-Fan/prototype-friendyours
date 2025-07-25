@@ -7,7 +7,7 @@ interface ChatRequest {
   conversationHistory: Array<{ role: "user" | "assistant"; content: string }>
 }
 
-interface EmotionAnalysis {
+interface EmotionAnalysis{
   emotion: string
   category: "positive" | "neutral" | "negative"
   keywords: string[]
@@ -174,7 +174,7 @@ Berikan response yang natural, empati, dan helpful. Jangan terlalu panjang (maks
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "openchat:3.5",
+          model: process.env.OLLAMA_MODEL || "llama3",
           prompt: messages.map((msg) => `${msg.role}: ${msg.content}`).join("\n\n"),
           stream: false,
           options: {

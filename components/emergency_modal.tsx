@@ -16,17 +16,17 @@ export function EmergencyModal({ isOpen, onClose }: EmergencyModalProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2 text-red-600">
             <AlertTriangle className="h-6 w-6" />
-            <span>Kami Peduli Padamu</span>
+            <span>🤗 Kami Peduli Padamu</span>
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <p className="text-gray-700 leading-relaxed">
             Kami khawatir kamu mengalami tekanan berat. Ingat bahwa kamu tidak sendirian, dan ada bantuan profesional
-            yang tersedia. Kamu berharga!
+            yang tersedia. Kamu berharga! 💙
           </p>
 
           <div className="bg-gradient-to-r from-red-100 to-pink-100 p-4 rounded-lg border border-red-200">
-            <h4 className="font-semibold text-red-800 mb-2">Bantuan Darurat:</h4>
+            <h4 className="font-semibold text-red-800 mb-2">🚨 Bantuan Darurat:</h4>
             <div className="space-y-2 text-sm">
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 text-red-600" />
@@ -44,8 +44,7 @@ export function EmergencyModal({ isOpen, onClose }: EmergencyModalProps) {
               className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white shadow-lg"
               onClick={() => window.open("tel:119", "_blank")}
             >
-              <Phone className="h-4 w-4 mr-2" />
-              Hubungi Hotline Sekarang
+              <Phone className="h-4 w-4 mr-2" />📞 Hubungi Hotline Sekarang
             </Button>
 
             <Button
@@ -53,8 +52,7 @@ export function EmergencyModal({ isOpen, onClose }: EmergencyModalProps) {
               className="border-purple-200 text-purple-600 hover:bg-purple-50 bg-gradient-to-r from-purple-50 to-pink-50"
               onClick={() => window.open("https://wa.me/6281199999119", "_blank")}
             >
-              <MessageCircle className="h-4 w-4 mr-2" />
-              Chat dengan Konselor
+              <MessageCircle className="h-4 w-4 mr-2" />💬 Chat dengan Konselor
             </Button>
 
             <Button variant="ghost" onClick={onClose} className="text-gray-600 hover:bg-gray-100">
@@ -66,13 +64,13 @@ export function EmergencyModal({ isOpen, onClose }: EmergencyModalProps) {
             <div className="flex items-center justify-center space-x-2 text-purple-600 mb-2">
               <div className="relative">
                 <Heart className="h-5 w-5" />
-                <Sparkles className="h-3 w-3 text-amber-400 absolute -top-1 -right-1" />
+                <Sparkles className="h-3 w-3 text-yellow-400 absolute -top-1 -right-1" />
               </div>
-              <span className="font-medium bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="font-medium bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
                 FriendYours
               </span>
             </div>
-            <p className="text-xs text-gray-500">Kamu berharga dan layak mendapatkan bantuan</p>
+            <p className="text-xs text-gray-500">🌈 Kamu berharga dan layak mendapatkan bantuan 🌈</p>
           </div>
         </div>
       </DialogContent>

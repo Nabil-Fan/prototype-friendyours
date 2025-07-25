@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Heart, TrendingUp, Calendar, BarChart3 } from "lucide-react"
 import Link from "next/link"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
 
 const moodData = [
@@ -38,6 +39,7 @@ const weeklyInsights = [
 ]
 
 export default function TrackingPage() {
+  
   const getMoodColor = (mood: number) => {
     if (mood >= 7) return "#10B981" // Green - Happy
     if (mood >= 5) return "#F59E0B" // Orange - Neutral
@@ -63,7 +65,7 @@ export default function TrackingPage() {
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-2">
               <Heart className="h-8 w-8 text-pink-500" />
-              <h1 className="text-2xl font-bold text-gray-800">SAHABATKITA</h1>
+              <h1 className="text-2xl font-bold text-gray-800">FriendYours</h1>
             </Link>
             <nav className="hidden md:flex space-x-6">
               <Link href="/curhat" className="text-gray-600 hover:text-gray-800 transition-colors">

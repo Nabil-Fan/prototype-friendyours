@@ -14,13 +14,24 @@ interface SelectContextType {
 const SelectContext = React.createContext<SelectContextType | null>(null)
 
 interface SelectProps {
-  value: string
+  value?: string
+  defaultValue?: string
   onValueChange: (value: string) => void
   children: React.ReactNode
 }
 
-const Select: React.FC<SelectProps> = ({ value, onValueChange, children }) => {
+const Select: React.FC<SelectProps> = ({ value, defaultValue, onValueChange, children }) => {
+  const [internalValue, setInternalValue] = React.useState(defaultValue || value || "")
   const [open, setOpen] = React.useState(false)
+
+  const currentValue = value !== undefined ? value : internalValue
+
+  const handleValueChange = (newValue: string) => {
+    if (value === undefined) {
+      setInternalValue(newValue)
+    }
+    onValueChange(newValue)
+  }
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -40,7 +51,7 @@ const Select: React.FC<SelectProps> = ({ value, onValueChange, children }) => {
   }, [open])
 
   return (
-    <SelectContext.Provider value={{ value, onValueChange, open, setOpen }}>
+    <SelectContext.Provider value={{ value: currentValue, onValueChange: handleValueChange, open, setOpen }}>
       <div className="relative" data-select-root>
         {children}
       </div>
